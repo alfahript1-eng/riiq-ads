@@ -1,77 +1,57 @@
 
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>RIIQ.ADS - Global Pixel Advertising</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <style>
 *{box-sizing:border-box}
-body{
- margin:0;background:#080d17;color:white;
- font-family:Arial,sans-serif
-}
-header{
- padding:20px;background:#101a2b;
- display:flex;justify-content:space-between;
- align-items:center;border-bottom:1px solid #26354b
-}
-.logo{font-size:25px;font-weight:bold}
-.logo span{color:#4b9bff}
-header small{color:#9aabc2}
-.hero{text-align:center;padding:35px 15px 20px}
-.hero h1{font-size:30px;margin:5px}
-.hero p{color:#9aabc2}
-.price{color:#56a5ff;font-size:25px;font-weight:bold}
-.stats{
- display:flex;justify-content:center;gap:12px;
- padding:10px;flex-wrap:wrap
-}
-.stat{
- background:#142137;padding:13px 20px;
- border-radius:10px;text-align:center
-}
-.stat small{display:block;color:#9aabc2}
-#map{
- height:420px;width:100%;
- border-top:1px solid #26354b;
- border-bottom:1px solid #26354b
-}
-.info{
- padding:20px;text-align:center
-}
-button{
- background:#2679e9;color:white;border:0;
- padding:13px 22px;border-radius:8px;
- font-size:15px;font-weight:bold;cursor:pointer
-}
-button:active{opacity:.7}
-.panel{
- margin:15px;background:#121e30;
- padding:20px;border-radius:12px
-}
-.panel p{color:#aabbd1}
-footer{
- text-align:center;padding:25px;color:#8292a8;
- font-size:12px
-}
+body{margin:0;background:#080d18;color:#fff;font-family:Arial,sans-serif}
+header{padding:19px 5%;background:#101a2c;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #263750}
+.logo{font-size:25px;font-weight:bold;letter-spacing:1px}
+.logo span{color:#409aff}
+header small{color:#9cacc2;font-size:10px}
+.hero{text-align:center;padding:35px 15px}
+.hero h1{font-size:29px;margin:5px}
+.hero p{color:#a8b6ca}
+.price{color:#58a5ff;font-size:25px;font-weight:bold;margin:18px}
+.stats{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin:10px}
+.stat{background:#142239;padding:15px 22px;border-radius:10px;text-align:center}
+.stat small{display:block;color:#aabbd0;margin-top:5px}
+#map{height:430px;width:100%;border-top:1px solid #263750;border-bottom:1px solid #263750}
+.panel{background:#121f33;margin:18px 12px;padding:20px;border-radius:13px}
+.panel h2{margin-top:0}
+.panel p{color:#aabbd0;line-height:1.6}
+button{border:0;background:#267bea;color:white;padding:13px 19px;border-radius:8px;font-weight:bold;font-size:14px;cursor:pointer}
+button:disabled{opacity:.5}
+.secondary{background:#34435b}
+input{width:100%;padding:13px;border-radius:8px;border:1px solid #34465f;background:#091321;color:white;margin:8px 0 16px}
+label{font-size:14px;font-weight:bold}
+#formArea{display:none}
+#preview{max-width:100%;max-height:220px;display:none;margin:12px auto;border-radius:9px}
+.total{font-size:28px;color:#58a5ff;font-weight:bold}
+.note{font-size:12px;color:#8295af}
+footer{text-align:center;padding:25px;color:#8295af;font-size:12px}
+.leaflet-container{background:#dce5ed}
 </style>
 </head>
 <body>
 
 <header>
  <div class="logo">RIIQ<span>.ADS</span></div>
- <small>GLOBAL ADVERTISING</small>
+ <small>GLOBAL PIXEL ADVERTISING</small>
 </header>
 
 <section class="hero">
  <h1>Your World. Your Advertisement.</h1>
- <p>Buy digital advertising space across the world.</p>
+ <p>Choose your advertising space across the world.</p>
  <div class="price">$1 / PIXEL</div>
+ <p>One pixel. One advertising space.</p>
 </section>
 
-<section class="stats">
+<div class="stats">
  <div class="stat">
   <strong id="selected">0</strong>
   <small>Selected Pixels</small>
@@ -80,30 +60,54 @@ footer{
   <strong id="total">$0</strong>
   <small>Total Price</small>
  </div>
-</section>
+</div>
 
 <div id="map"></div>
 
 <section class="panel">
- <h2>Buy Advertising Pixels</h2>
- <p>Tap an area on the map to select an advertising location.</p>
- <p>Price: $1 for each selected pixel.</p>
- <button onclick="clearPixels()">Clear Selection</button>
- <button onclick="checkout()">Continue</button>
- <p id="message">No pixels selected.</p>
+ <h2>Advertising Selection</h2>
+ <p>Tap on land or an island to select an advertising pixel. Ocean areas cannot be selected.</p>
+ <p id="mapStatus">Loading world land boundaries...</p>
+ <button class="secondary" onclick="clearPixels()">Clear Selection</button>
+ <button onclick="openForm()">Buy Pixels</button>
+</section>
+
+<section class="panel" id="formArea">
+ <h2>Advertiser Information</h2>
+ <p>Enter your advertising information below.</p>
+
+ <form id="adForm">
+  <label>Business or Brand Name</label>
+  <input id="brand" type="text" placeholder="Your brand name" required maxlength="80">
+
+  <label>Destination Website URL</label>
+  <input id="website" type="url" placeholder="https://example.com" required>
+
+  <label>Advertisement Image</label>
+  <input id="image" type="file" accept="image/png,image/jpeg,image/webp" required>
+
+  <img id="preview" alt="Advertisement preview">
+
+  <p>Selected Pixels: <strong id="formPixels">0</strong></p>
+  <p>Price per Pixel: $1</p>
+  <div class="total" id="formTotal">$0</div>
+
+  <p class="note">This is a demo submission. Payment and permanent ad storage are not connected yet.</p>
+
+  <button type="submit">Submit Advertisement</button>
+  <button type="button" class="secondary" onclick="closeForm()">Cancel</button>
+ </form>
+ <p id="result"></p>
 </section>
 
 <section class="panel">
  <h2>About RIIQ.ADS</h2>
- <p>
- RIIQ.ADS is a global pixel advertising marketplace.
- Advertisers can select digital advertising spaces
- and connect their brands with audiences worldwide.
- </p>
+ <p>RIIQ.ADS is a global pixel advertising marketplace. Advertisers can select digital advertising spaces on a world map and connect their brands with audiences worldwide.</p>
 </section>
 
 <footer>
- © 2026 RIIQ.ADS — Global Pixel Advertising
+ © 2026 RIIQ.ADS<br>
+ Global Pixel Advertising Marketplace
 </footer>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -115,54 +119,189 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
  maxZoom:18
 }).addTo(map);
 
+let countries=[];
 let pixels=[];
 let markers=[];
+let landReady=false;
+let imageURL=null;
+
+function insideRing(point,ring){
+ let x=point[0],y=point[1],inside=false;
+ for(let i=0,j=ring.length-1;i<ring.length;j=i++){
+  let xi=ring[i][0],yi=ring[i][1];
+  let xj=ring[j][0],yj=ring[j][1];
+  let cross=((yi>y)!=(yj>y)) &&
+    (x<(xj-xi)*(y-yi)/(yj-yi)+xi);
+  if(cross)inside=!inside;
+ }
+ return inside;
+}
+
+function inPolygon(point,poly){
+ if(!insideRing(point,poly[0]))return false;
+ for(let i=1;i<poly.length;i++){
+  if(insideRing(point,poly[i]))return false;
+ }
+ return true;
+}
+
+function onLand(lng,lat){
+ for(const feature of countries){
+  const g=feature.geometry;
+  if(!g)continue;
+  if(g.type==='Polygon' && inPolygon([lng,lat],g.coordinates))return true;
+  if(g.type==='MultiPolygon'){
+   for(const poly of g.coordinates){
+    if(inPolygon([lng,lat],poly))return true;
+   }
+  }
+ }
+ return false;
+}
+
+fetch('https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson')
+.then(r=>{
+ if(!r.ok)throw new Error('Map data unavailable');
+ return r.json();
+})
+.then(data=>{
+ countries=data.features;
+ landReady=true;
+ document.getElementById('mapStatus').innerText=
+ 'World map ready. Select pixels on land and islands.';
+})
+.catch(()=>{
+ document.getElementById('mapStatus').innerText=
+ 'Land data could not load. Refresh the page and try again.';
+});
 
 map.on('click',function(e){
- const lat=Math.round(e.latlng.lat*10)/10;
- const lng=Math.round(e.latlng.lng*10)/10;
- const key=lat+','+lng;
+ if(!landReady){
+  alert('Please wait for the world map to load.');
+  return;
+ }
 
- if(pixels.includes(key))return;
+ const lat=e.latlng.lat;
+ const lng=e.latlng.lng;
 
- pixels.push(key);
+ if(!onLand(lng,lat)){
+  alert('Ocean areas are not available for advertising.');
+  return;
+ }
+
+ const cellLat=0.05;
+ const cellLng=0.05;
+ const row=Math.floor((lat+90)/cellLat);
+ const col=Math.floor((lng+180)/cellLng);
+ const key=row+':'+col;
+
+ if(pixels.some(p=>p.key===key))return;
+
+ const south=row*cellLat-90;
+ const west=col*cellLng-180;
+ const north=south+cellLat;
+ const east=west+cellLng;
+
+ const corners=[
+  [west,south],[west,north],
+  [east,south],[east,north]
+ ];
+
+ if(!corners.every(p=>onLand(p[0],p[1]))){
+  alert('This pixel crosses a coastline. Please select another area.');
+  return;
+ }
 
  const marker=L.rectangle([
-  [lat-0.05,lng-0.05],
-  [lat+0.05,lng+0.05]
+  [south,west],[north,east]
  ],{
   color:'#168cff',
   fillColor:'#168cff',
-  fillOpacity:0.8
+  fillOpacity:0.85,
+  weight:1
  }).addTo(map);
 
- markers.push(marker);
+ pixels.push({key:key,marker:marker});
  update();
 });
 
 function update(){
- document.getElementById('selected').innerText=pixels.length;
- document.getElementById('total').innerText='$'+pixels.length;
- document.getElementById('message').innerText=
- pixels.length+' pixel selected.';
+ const count=pixels.length;
+ document.getElementById('selected').innerText=count;
+ document.getElementById('total').innerText='$'+count;
+ document.getElementById('formPixels').innerText=count;
+ document.getElementById('formTotal').innerText='$'+count;
 }
 
 function clearPixels(){
+ pixels.forEach(p=>map.removeLayer(p.marker));
  pixels=[];
- markers.forEach(m=>map.removeLayer(m));
- markers=[];
  update();
 }
 
-function checkout(){
+function openForm(){
  if(pixels.length===0){
-  alert('Please select pixels first.');
+  alert('Please select at least one pixel.');
   return;
  }
- alert('Demo only! Total: $'+pixels.length+
- '\nPayment is not connected yet.');
+ document.getElementById('formArea').style.display='block';
+ document.getElementById('formArea').scrollIntoView({behavior:'smooth'});
 }
-</script>
 
+function closeForm(){
+ document.getElementById('formArea').style.display='none';
+}
+
+document.getElementById('image').addEventListener('change',function(){
+ const file=this.files[0];
+ const preview=document.getElementById('preview');
+
+ if(imageURL)URL.revokeObjectURL(imageURL);
+ imageURL=null;
+ preview.style.display='none';
+
+ if(!file)return;
+
+ if(!['image/png','image/jpeg','image/webp'].includes(file.type)){
+  alert('Please upload PNG, JPG or WEBP.');
+  this.value='';
+  return;
+ }
+
+ if(file.size>3*1024*1024){
+  alert('Image must be smaller than 3 MB.');
+  this.value='';
+  return;
+ }
+
+ imageURL=URL.createObjectURL(file);
+ preview.src=imageURL;
+ preview.style.display='block';
+});
+
+document.getElementById('adForm').addEventListener('submit',function(e){
+ e.preventDefault();
+
+ const url=document.getElementById('website').value;
+ if(!/^https?:\/\//i.test(url)){
+  alert('Website URL must start with https:// or http://');
+  return;
+ }
+
+ if(pixels.length===0){
+  alert('No pixels selected.');
+  return;
+ }
+
+ alert(
+  'Demo advertisement submitted!\\n'+
+  'Brand: '+document.getElementById('brand').value+
+  '\\nWebsite: '+url+
+  '\\nPixels: '+pixels.length+
+  '\\nTotal: $'+pixels.length+
+  '\\n\\nNo payment has been made. Your submission is not permanently saved.'
+ );
+});
+</script>
 </body>
 </html>
